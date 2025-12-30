@@ -3,21 +3,28 @@ Robo DevTop
 
 ## Build
 
-To configure and build all apps using the new parent `buildall` CMake,
-create `code/vip/programs/output/build` and run CMake from that build
-directory (keeps build files isolated under `output`):
+### Quick build (using script)
+
+The easiest way — run the build script from the repo root:
 
 ```bash
-# change into programs and create nested output build directory
+./code/vip/programs/buildall/build.sh
+```
+
+This will:
+- Create `code/vip/programs/output/build` (if needed)
+- Configure and build all apps
+- Place artifacts in `code/vip/programs/output/build`
+
+### Manual build
+
+Or run CMake commands directly:
+
+```bash
 cd code/vip/programs
 mkdir -p output/build && cd output/build
-
-# configure using the buildall parent CMake (source is ../buildall)
 cmake ../../buildall
-
-# build all apps
 make -j4
 ```
 
-Per-app binary directories will be created under `code/vip/programs/output/build`,
-for example the `blink` executable will be at `code/vip/programs/output/build/blink_build/blink.elf`.
+Artifacts will be in `code/vip/programs/output/build`, e.g., `blink_build/blink.elf`.

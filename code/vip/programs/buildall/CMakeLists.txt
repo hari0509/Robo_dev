@@ -58,5 +58,35 @@ target_link_libraries(freertos
 # update other sw child cmake: add_subdirectory(../apps/<name>/src <binary-dir>)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/blink_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bsw_cfg_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/cdd_servo_build)
+
+## --- System executable using parent main and linked libraries -----
+# Build a single integrated system binary that uses the parent
+# `main.c` entry point and links against the bsw_cfg, blink, and
+# cdd_servo libraries. All component sources are compiled in their
+# respective subdirectories and linked here.
+
+add_executable(vip_system
+	${CMAKE_CURRENT_SOURCE_DIR}/main.c
+	${CMAKE_CURRENT_SOURCE_DIR}/ecum.c
+)
+
+target_include_directories(vip_system PRIVATE
+	${VIP_DIR}/programs/bsw_cfg
+)
+
+target_link_libraries(vip_system PRIVATE
+	freertos
+	pico_stdlib
+	bsw_cfg
+	blink
+	cdd_servo
+)
+
+# Generate UF2, hex, and other output formats from the ELF file
+pico_add_extra_outputs(vip_system)
+
+install(TARGETS vip_system DESTINATION .)
 
 ## End of parent CMake
