@@ -40,7 +40,7 @@ void asw_task_100ms(void *pvParameters)
     for (;;)
     {
         asw_blink_mainfunction();
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
