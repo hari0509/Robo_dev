@@ -2,9 +2,6 @@
 
 ############################################################
 # Build script for vip_apps (programs/buildall)
-#
-# This script configures and builds all apps under programs/apps
-# using CMake and Make, with output in code/vip/programs/output/build.
 ############################################################
 
 set -e  # Exit on error
@@ -26,7 +23,7 @@ mkdir -p "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"
 
 # Clean previous build (optional, uncomment to always clean)
-# rm -rf *
+rm -rf *
 
 echo "Running CMake configuration from: $(pwd)"
 cmake "$SCRIPT_DIR"
