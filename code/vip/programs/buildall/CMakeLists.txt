@@ -50,6 +50,8 @@ target_link_libraries(freertos
 
 ## --- Add children cmake -----------------------------------
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bsw_cfg_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_DIR}/mcal_gpt_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/uart ${CMAKE_CURRENT_BINARY_DIR}/mcal_uart_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/cdd_servo_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/blink_build)
 
@@ -61,12 +63,17 @@ add_executable(vip_system
 
 target_include_directories(vip_system PRIVATE
 	${VIP_DIR}/programs/bsw_cfg
+	${VIP_DIR}/programs/mcal/gpt/inc
+	${VIP_DIR}/programs/mcal/uart/inc
 )
 
 #Add child executable libraries
 target_link_libraries(vip_system PRIVATE
 	freertos
 	pico_stdlib
+	#mcal libs
+	mcal_gpt
+	mcal_uart
 	#system lib
 	bsw_cfg
   #cdd libs
@@ -75,6 +82,10 @@ target_link_libraries(vip_system PRIVATE
 	blink
 	
 )
+
+#uart feature
+pico_enable_stdio_usb(vip_system 1)
+pico_enable_stdio_uart(vip_system 0)
 
 # Generate UF2, hex, and other output formats from the ELF file
 pico_add_extra_outputs(vip_system)
