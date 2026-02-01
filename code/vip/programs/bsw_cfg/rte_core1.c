@@ -12,6 +12,7 @@
 
 /* --- INCLUDES --- */
 #include "rte.h"
+#include "rte_core1.h"
 
 /* --- MACROS --- */
 /* None */
@@ -26,19 +27,21 @@
 /* None */
 
 /* --- PUBLIC CODE --- */
-/* None */
 /**
- * RTE_Init()
- * RTE-specific initialization. Currently a placeholder for future
- * component-level configuration. Task creation is performed by OS_Init
- * using the task_table.
+ * sys_task_100ms()
+ * 100ms periodic task for System NVM component.
+ * Calls the sys_nvm_mainfunction which handles NVM operations.
  */
-void RTE_Init(void)
+void sys_task_100ms(void *pvParameters)
 {
-    /* RTE-specific initialisation, component-level inits could go
-     * here. Task creation is performed by OS_Init using the
-     * `task_table` so RTE_Init can be empty or used for future work.
-     */
+    (void)pvParameters;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    for (;;)
+    {
+        sys_nvm_mainfunction();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
 }
 
 /* --- REVISION HISTORY --- */

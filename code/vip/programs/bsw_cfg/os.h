@@ -18,11 +18,12 @@
 #include <task.h>
 
 /* --- MACROS --- */
-/* Size of the static task table defined in os.c */
-#define TASK_TABLE_SIZE 2
+#define TASK_TABLE_SIZE 3
 
-/* --- CONSTANTS --- */
-/* None */
+/* Core affinity masks for RP2040 */
+#define OS_CORE_0      (1 << 0)
+#define OS_CORE_1      (1 << 1)
+#define OS_CORE_BOTH   (OS_CORE_0 | OS_CORE_1)
 
 /* --- DATA TYPES --- */
 typedef struct {
@@ -31,6 +32,7 @@ typedef struct {
     uint16_t stackDepth;
     void *params;
     UBaseType_t priority;
+    UBaseType_t coreAffinity;   /* NEW */
 } OS_TaskEntry;
 
 /* --- VARIABLES --- */
@@ -38,7 +40,6 @@ extern const OS_TaskEntry task_table[TASK_TABLE_SIZE];
 
 /* --- PUBLIC FUNCTION DECLARATIONS --- */
 void OS_Init(void);
-BaseType_t OS_CreateTask(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth, void *pvParameters, UBaseType_t uxPriority, TaskHandle_t *pxCreatedTask);
 
 #endif /* BSW_OS_H */
 

@@ -1,5 +1,6 @@
-#ifndef RTE_H
-#define RTE_H
+#ifndef BSW_RTE_CORE0_H
+#define BSW_RTE_CORE0_H
+
 /**
  * ============================================================================
  * FILE: rte.h
@@ -13,11 +14,7 @@
  */
 
 /* --- INCLUDES --- */
-#include <FreeRTOS.h>
-#include <task.h>
-#include "os.h"
-#include "rte_core0.h"
-#include "rte_core1.h"
+/* None */
 
 /* --- MACROS --- */
 /* None */
@@ -26,10 +23,17 @@
 /* None */
 
 /* --- PUBLIC FUNCTION DECLARATIONS --- */
-/* RTE initialisation - creates and configures tasks */
-void RTE_Init(void);
+/* None */
 
-#endif /* RTE_H */
+/* Task functions provided by RTE (FreeRTOS task entry points) */
+void asw_task_100ms(void *pvParameters);
+void cdd_task_100ms(void *pvParameters);
+
+/* Application/linkage points: mainfunctions implemented in component source */
+void asw_blink_mainfunction(void);
+void cdd_servo_mainfunction(void);
+
+#endif /* BSW_RTE_CORE0_H */
 
 /* --- REVISION HISTORY --- */
 /* v1.0 - Initial commit - Hari */
