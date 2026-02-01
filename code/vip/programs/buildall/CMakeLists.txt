@@ -51,9 +51,9 @@ target_link_libraries(freertos
 ## --- Add children cmake -----------------------------------
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bsw_cfg_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_DIR}/mcal_gpt_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/uart ${CMAKE_CURRENT_BINARY_DIR}/mcal_uart_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/cdd_servo_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/blink_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../sys/Nvm ${CMAKE_CURRENT_BINARY_DIR}/sys_nvm_build)
 
 ## --- System executable using parent main and linked libraries -----
 add_executable(vip_system
@@ -64,7 +64,6 @@ add_executable(vip_system
 target_include_directories(vip_system PRIVATE
 	${VIP_DIR}/programs/bsw_cfg
 	${VIP_DIR}/programs/mcal/gpt/inc
-	${VIP_DIR}/programs/mcal/uart/inc
 )
 
 #Add child executable libraries
@@ -73,13 +72,14 @@ target_link_libraries(vip_system PRIVATE
 	pico_stdlib
 	#mcal libs
 	mcal_gpt
-	mcal_uart
 	#system lib
 	bsw_cfg
   #cdd libs
 	cdd_servo
 	#app libs
 	blink
+	# sys
+	sys_nvm
 	
 )
 

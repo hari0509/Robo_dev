@@ -11,9 +11,19 @@
  */
 
 /* --- INCLUDES --- */
+#include <FreeRTOS.h>
+#include <stdio.h>
+#include "pico/stdlib.h"
+#include "pico/multicore.h"
+/* User files */
+#include "ecum.h"
+#include "os.h"
+#include "rte.h"
+
 /* Forward declarations/external symbols from components */
 extern void cdd_servo_init(void);
 extern void asw_blink_init(void);
+extern void sys_nvm_init(void);
 
 /* --- MACROS --- */
 /* None */
@@ -35,9 +45,30 @@ extern void asw_blink_init(void);
  */
 void EcuM_Init(void)
 {
-    cdd_servo_init();
-    asw_blink_init();
+    /* Run driver init sequence; OS will create and schedule SYS_NVM on core1 */
+    Driver_init0();
+    Driver_init1();
+    Driver_init2();
 }
+
+void Driver_init0(void)
+{
+    OS_Init();
+    RTE_Init();
+    sys_nvm_init();
+}
+
+void Driver_init1(void)
+{
+    cdd_servo_init();
+}
+
+void Driver_init2(void)
+{
+    asw_blink_init();
+    vTaskStartScheduler();
+}
+
 
 /* --- REVISION HISTORY --- */
 /* v1.0 - Initial commit - Hari */

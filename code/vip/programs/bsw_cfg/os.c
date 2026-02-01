@@ -11,10 +11,11 @@
  */
 
 /* --- INCLUDES --- */
-#include "os.h"
-#include "rte.h"
+#include <string.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include "os.h"
+#include "rte.h"
 
 /* --- MACROS --- */
 /* None */
@@ -28,9 +29,12 @@
  * defined by TASK_TABLE_SIZE in os.h. Each entry specifies a task function,
  * name, stack depth, parameters, and priority.
  */
+
+/* --- TASK TABLE --- */
 const OS_TaskEntry task_table[TASK_TABLE_SIZE] = {
-    { asw_task_100ms, "ASW_Task", 256, NULL, 2 },
-    { cdd_task_100ms, "CDD_Task", 256, NULL, 2 },
+    { asw_task_100ms, "ASW_Task", 256, NULL, 2, OS_CORE_0 },
+    { cdd_task_100ms, "CDD_Task", 256, NULL, 2, OS_CORE_0 },
+    { sys_task_100ms, "SYS_Task", 256, NULL, 2, OS_CORE_1 }, 
 };
 
 /* --- PRIVATE CODE --- */
@@ -47,17 +51,20 @@ void OS_Init(void)
     for (int i = 0; i < TASK_TABLE_SIZE; ++i)
     {
         const OS_TaskEntry *e = &task_table[i];
-        xTaskCreate(e->taskFn, e->name, e->stackDepth, e->params, e->priority, NULL);
-    }
-}
 
-/**
- * OS_CreateTask()
- * Wrapper function for xTaskCreate, providing a consistent OS abstraction.
- */
-BaseType_t OS_CreateTask(TaskFunction_t pxTaskCode, const char * const pcName, const uint16_t usStackDepth, void *pvParameters, UBaseType_t uxPriority, TaskHandle_t *pxCreatedTask)
-{
-    return xTaskCreate(pxTaskCode, pcName, usStackDepth, pvParameters, uxPriority, pxCreatedTask);
+        TaskHandle_t taskHandle = NULL;
+
+        /* Create task with affinity (FreeRTOS SMP) */
+        xTaskCreateAffinitySet(
+            e->taskFn,
+            e->name,
+            e->stackDepth,
+            e->params,
+            e->priority,
+            e->coreAffinity,
+            &taskHandle
+        );
+    }
 }
 
 /* --- REVISION HISTORY --- */

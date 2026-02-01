@@ -29,7 +29,7 @@ static bool state = false;
 /* --- PUBLIC CODE --- */
 /**
  * asw_blink_init()
- * Initialize GPIO pins for LED control (pins 15).
+ * Initialize GPIO pin for LED control (on-board LED, GPIO 25).
  * Called once during ECU initialization.
  */
 void asw_blink_init(void)
@@ -38,6 +38,9 @@ void asw_blink_init(void)
     gpio_set_dir(LED_PIN, GPIO_OUT);
 }
 
+/* STUB_TEST */
+#include <stdio.h>
+#include "pico/stdlib.h"
 /**
  * asw_blink_mainfunction()
  * Periodic mainfunction (100ms) called by RTE task.
@@ -47,6 +50,7 @@ void asw_blink_mainfunction(void)
 {
     gpio_put(LED_PIN, state);
     state = !state;
+    printf("ASW Blink mainfunction core=%u\n", get_core_num());
 }
 
 /* --- REVISION HISTORY --- */
