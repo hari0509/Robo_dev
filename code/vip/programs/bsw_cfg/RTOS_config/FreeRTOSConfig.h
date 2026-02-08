@@ -2,6 +2,7 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#include "../os_callout_stubs.h"
 /*-----------------------------------------------------------
  * See http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
@@ -105,5 +106,16 @@ to exclude the API function. */
 #define INCLUDE_xQueueGetMutexHolder 1
 
 /* A header file that defines trace macro can be included here. */
+
+/* Include OS callout prototypes so trace macros can invoke them. */
+
+// #if configUSE_TRACE_FACILITY
+// #ifndef traceTASK_SWITCHED_IN
+// #define traceTASK_SWITCHED_IN()  Os_Callout_PretaskHook()
+// #endif
+// #ifndef traceTASK_SWITCHED_OUT
+// #define traceTASK_SWITCHED_OUT() Os_Callout_PosttaskHook()
+// #endif
+// #endif
 
 #endif /* FREERTOS_CONFIG_H */
