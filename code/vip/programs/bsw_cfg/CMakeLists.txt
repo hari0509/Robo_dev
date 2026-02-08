@@ -9,6 +9,7 @@
 
 add_library(bsw_cfg STATIC
     os.c
+    os_callout_stubs.c
     rte.c
     rte_core0.c
     rte_core1.c
@@ -16,7 +17,6 @@ add_library(bsw_cfg STATIC
 
 target_include_directories(bsw_cfg PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../sys/Nvm/inc
 )
 
 target_link_libraries(bsw_cfg PUBLIC
