@@ -40,6 +40,7 @@ void asw_task_100ms(void *pvParameters)
     for (;;)
     {
         asw_blink_mainfunction();
+        asw_checkpointreached();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
@@ -57,6 +58,22 @@ void cdd_task_100ms(void *pvParameters)
     for (;;)
     {
         cdd_servo_mainfunction();
+        cdd_checkpointreached();
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
+
+/**
+ * Test_task_100ms()
+ */
+void Test_task_100ms(void *pvParameters)
+{
+    (void)pvParameters;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    for (;;)
+    {
+        TestMain_mainfunction();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }

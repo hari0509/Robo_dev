@@ -50,7 +50,6 @@ int main(void)
     gpt_start_timer(GPT_TIMER_0);
     EcuM_Init();
     startup_KPI_time_us = gpt_get_timervalue(GPT_TIMER_0);
-    gpt_stop_timer(GPT_TIMER_0);
     printf("Start-up KPI(ms): %llu\r\n", startup_KPI_time_us/1000);
 
     while (true)

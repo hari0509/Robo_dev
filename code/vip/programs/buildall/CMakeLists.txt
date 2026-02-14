@@ -54,6 +54,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/cdd_servo_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/blink_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../sys/Nvm ${CMAKE_CURRENT_BINARY_DIR}/sys_nvm_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../tools/Self_Test ${CMAKE_CURRENT_BINARY_DIR}/self_test_build)
 
 ## --- System executable using parent main and linked libraries -----
 add_executable(vip_system
@@ -78,9 +79,10 @@ target_link_libraries(vip_system PRIVATE
 	cdd_servo
 	#app libs
 	blink
-	# sys
+	#sys
 	sys_nvm
-	
+	#self test
+	Selftest
 )
 
 #uart feature

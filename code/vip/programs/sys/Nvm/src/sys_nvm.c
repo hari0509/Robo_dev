@@ -9,10 +9,8 @@ void sys_nvm_init(void)
 {
 	
 }
-/* STUB_TEST */
-#include <stdio.h>
-#include "pico/stdlib.h"
+
 void sys_nvm_mainfunction(void)
 {
-printf("SYS NVM mainfunction running on core %u\n", get_core_num());
+
 }

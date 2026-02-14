@@ -18,7 +18,7 @@
 #include <task.h>
 
 /* --- MACROS --- */
-#define TASK_TABLE_SIZE 3
+#define TASK_TABLE_SIZE     (4u)
 
 /* Core affinity masks for RP2040 */
 #define OS_CORE_0      (1 << 0)

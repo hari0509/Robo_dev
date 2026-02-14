@@ -35,6 +35,7 @@ const OS_TaskEntry task_table[TASK_TABLE_SIZE] = {
     { asw_task_100ms, "ASW_Task", 256, NULL, 2, OS_CORE_0 },
     { cdd_task_100ms, "CDD_Task", 256, NULL, 2, OS_CORE_0 },
     { sys_task_100ms, "SYS_Task", 256, NULL, 2, OS_CORE_1 }, 
+    { Test_task_100ms, "Test_Task", 256, NULL, 2, OS_CORE_0 },
 };
 
 /* --- PRIVATE CODE --- */

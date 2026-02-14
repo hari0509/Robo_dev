@@ -48,7 +48,10 @@
 
 /* Run time and task stats gathering related definitions. */
 #define configGENERATE_RUN_TIME_STATS 0
+
+/* Configuration for Enabling Pretask and Posttask Hook */
 #define configUSE_TRACE_FACILITY 1
+
 #define configUSE_STATS_FORMATTING_FUNCTIONS 0
 
 /* Co-routine related definitions. */
@@ -105,17 +108,14 @@ to exclude the API function. */
 #define INCLUDE_xTaskResumeFromISR 1
 #define INCLUDE_xQueueGetMutexHolder 1
 
-/* A header file that defines trace macro can be included here. */
+/***********************User Callout************************/
 
-/* Include OS callout prototypes so trace macros can invoke them. */
+/* Check Whether Pre/PostTaskHook configuration enabled */
+#if configUSE_TRACE_FACILITY
 
-// #if configUSE_TRACE_FACILITY
-// #ifndef traceTASK_SWITCHED_IN
-// #define traceTASK_SWITCHED_IN()  Os_Callout_PretaskHook()
-// #endif
-// #ifndef traceTASK_SWITCHED_OUT
-// #define traceTASK_SWITCHED_OUT() Os_Callout_PosttaskHook()
-// #endif
-// #endif
+#define traceTASK_SWITCHED_IN()  Os_Callout_PretaskHook()
+#define traceTASK_SWITCHED_OUT() Os_Callout_PosttaskHook()
+
+#endif
 
 #endif /* FREERTOS_CONFIG_H */
