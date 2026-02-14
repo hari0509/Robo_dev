@@ -1,6 +1,18 @@
 # 💠 Genesis Platform
 Generic Platform to build the Hard real-time Embedded systems on RP2040.
 
+## 🏗️ Technical Stack
+
+| Component | Specification |
+| :--- | :--- |
+| 📛 **Project/Platform Name** | *Genesis* |
+| 🧠 **Controller** | *RP2040* |
+| ⏱️ **OS / RTOS** | *FreeRTOS* |
+| 📐 **SW Arch** | *AUTOSAR-based* | 
+| 🛠️ **MDriver / HAL** | *Pico-SDK* | 
+
+---
+
 ## Fetch Process
 
 ```bash
