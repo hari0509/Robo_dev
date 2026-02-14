@@ -40,6 +40,7 @@ void sys_task_100ms(void *pvParameters)
     for (;;)
     {
         sys_nvm_mainfunction();
+        sys_checkpointreached();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }

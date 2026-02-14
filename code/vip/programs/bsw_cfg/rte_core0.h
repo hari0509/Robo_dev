@@ -28,10 +28,14 @@
 /* Task functions provided by RTE (FreeRTOS task entry points) */
 void asw_task_100ms(void *pvParameters);
 void cdd_task_100ms(void *pvParameters);
+void Test_task_100ms(void *pvParameters);
 
 /* Application/linkage points: mainfunctions implemented in component source */
-void asw_blink_mainfunction(void);
-void cdd_servo_mainfunction(void);
+extern void asw_checkpointreached(void);
+extern void asw_blink_mainfunction(void);
+extern void cdd_checkpointreached(void);
+extern void cdd_servo_mainfunction(void);
+extern void TestMain_mainfunction(void);
 
 #endif /* BSW_RTE_CORE0_H */
 

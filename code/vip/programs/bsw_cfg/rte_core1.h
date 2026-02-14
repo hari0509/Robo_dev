@@ -29,7 +29,8 @@
 void sys_task_100ms(void *pvParameters);
 
 /* Application/linkage points: mainfunctions implemented in component source */
-void sys_nvm_mainfunction(void);
+extern void sys_checkpointreached(void);
+extern void sys_nvm_mainfunction(void);
 
 #endif /* BSW_RTE_CORE1_H */
 
