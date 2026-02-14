@@ -4,47 +4,65 @@
 
 ```
 code/vip/programs/
-├── buildall/
-│   ├── CMakeLists.txt          # Parent CMake (main build configuration)
-│   ├── build.sh                # Build script
-│   ├── main.c                  # RTOS entry point
-│   ├── ecum.c                  # ECU Manager component
-│   └── ecum.h                  # ECU Manager header
-│
-├── bsw_cfg/
-│   ├── CMakeLists.txt          # BSW config library CMake
-│   ├── os.c                    # OS abstraction implementation
-│   ├── os.h                    # OS abstraction header
-│   ├── rte.c                   # Runtime Environment implementation
-│   ├── rte.h                   # Runtime Environment header
-│   └── RTOS_config/
-│       └── FreeRTOSConfig.h    # FreeRTOS configuration
-│
-├── apps/
-│   └── blink/
-│       ├── CMakeLists.txt      # Blink app library CMake
-│       └── src/
-│           ├── CMakeLists.txt
-│           ├── asw_blink.c     # Blink component source
-│           └── build/          # (Out-of-tree build dir - created during build)
-│
-├── cdd/
-│   └── servo/
-│       ├── CMakeLists.txt      # CDD servo library CMake
-│       └── src/
-│           ├── cdd_servo.c     # CDD servo component source
-│           └── build/          # (Out-of-tree build dir - created during build)
-│
-├── output/
-│   └── build/                  # Main out-of-tree build directory
-│       ├── vip_system.elf      # Final executable
-│       ├── blink_build/        # Blink target objects
-│       ├── bsw_cfg_build/      # BSW config library objects
-│       ├── cdd_servo_build/    # CDD servo library objects
-│       └── CMakeFiles/         # CMake generated files
-│
-└── Design/                     # Documentation and design artifacts
-    └── FOLDER_STRUCTURE.md     # This file
+├── apps
+│   └── blink
+│       ├── CMakeLists.txt
+│       └── src
+│           └── asw_blink.c
+├── bsw_cfg
+│   ├── CMakeLists.txt
+│   ├── os.c
+│   ├── os_callout_stubs.c
+│   ├── os_callout_stubs.h
+│   ├── os.h
+│   ├── rte.c
+│   ├── rte_core0.c
+│   ├── rte_core0.h
+│   ├── rte_core1.c
+│   ├── rte_core1.h
+│   ├── rte.h
+│   └── RTOS_config
+│       └── FreeRTOSConfig.h
+├── buildall
+│   ├── build.sh
+│   ├── CMakeLists.txt
+│   ├── ecum.c
+│   ├── ecum.h
+│   └── main.c
+├── cdd
+│   └── servo
+│       ├── CMakeLists.txt
+│       ├── inc
+│       │   └── cdd_servo.h
+│       └── src
+│           └── cdd_servo.c
+├── Design
+│   ├── program_design.md
+│   └── turing_design.md
+├── mcal
+│   └── gpt
+│       ├── CMakeLists.txt
+│       ├── inc
+│       │   └── mcal_gpt.h
+│       └── src
+│           ├── mcal_gpt.c
+│           └── mcal_gpt_cfg.c
+├── output
+├── sys
+│   └── Nvm
+│       ├── CMakeLists.txt
+│       ├── inc
+│       │   └── sys_nvm.h
+│       └── src
+│           └── sys_nvm.c
+└── tools
+    └── Self_Test
+        ├── CMakeLists.txt
+        ├── inc
+        │   └── TestMain.h
+        └── src
+            ├── TestMain.c
+            └── TestScheduler.c
 ```
 
 ## Key Components

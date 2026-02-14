@@ -1,5 +1,11 @@
-# Robo_dev
-Robo DevTop
+# 💠 Genesis Platform
+Generic Platform to build the Hard real-time Embedded systems on RP2040.
+
+## Fetch Process
+
+```bash
+git clone https://github.com/hari0509/Robo_dev.git 
+```
 
 ## Build
 
