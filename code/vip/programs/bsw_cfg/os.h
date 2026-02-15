@@ -18,6 +18,7 @@
 #include <task.h>
 
 /* --- MACROS --- */
+/* Max no. of Tasks supported */
 #define TASK_TABLE_SIZE     (4u)
 
 /* Core affinity masks for RP2040 */

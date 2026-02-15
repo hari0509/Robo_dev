@@ -35,13 +35,16 @@
 void asw_task_100ms(void *pvParameters)
 {
     (void)pvParameters;
+    /* Function to convert ms to Ticks */
     const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    /* Function to Store the last task start time */
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
-    {
+    {   
+        /* Creating delay based on last start time */
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
         asw_blink_mainfunction();
         asw_checkpointreached();
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
 
@@ -57,9 +60,9 @@ void cdd_task_100ms(void *pvParameters)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
-        cdd_servo_mainfunction();
-        cdd_checkpointreached();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        cdd_servo_mainfunction();
+        cdd_checkpointreached();  
     }
 }
 
@@ -73,8 +76,8 @@ void Test_task_100ms(void *pvParameters)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
-        TestMain_mainfunction();
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        TestMain_mainfunction();
     }
 }
 

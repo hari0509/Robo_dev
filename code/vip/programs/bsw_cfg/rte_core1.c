@@ -39,9 +39,9 @@ void sys_task_100ms(void *pvParameters)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     {
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
         sys_nvm_mainfunction();
         sys_checkpointreached();
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 }
 
