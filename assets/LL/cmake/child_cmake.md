@@ -5,7 +5,7 @@ This command tells CMake:
  1. Compile `cdd_servo.c` into `cdd_servo.o`
  2. Use the `'ar'` tool to pack `cdd_servo.o` into `libcdd_servo.a`
 
- Command to lib `.a` bundle. 
+ Command to show the lib `.a` bundle. 
  ```cmake 
  ar -t libcdd_servo.a
  ```

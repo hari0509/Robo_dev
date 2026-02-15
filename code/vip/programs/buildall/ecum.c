@@ -24,6 +24,7 @@
 extern void cdd_servo_init(void);
 extern void asw_blink_init(void);
 extern void sys_nvm_init(void);
+extern void TestMain_init(void);
 
 /* --- MACROS --- */
 /* None */
@@ -61,6 +62,7 @@ void Driver_init0(void)
 void Driver_init1(void)
 {
     cdd_servo_init();
+    TestMain_init();
 }
 
 void Driver_init2(void)
