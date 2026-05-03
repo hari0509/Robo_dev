@@ -7,14 +7,6 @@ INCLUDE "pico_flash_region.ld"
  * Adjust GENESIS_FLASH_SIZE / GENESIS_SRAM_SIZE for your board.
  * -------------------------------------------------------------------------- */
 
-#ifndef GENESIS_FLASH_ORIGIN
-#define GENESIS_FLASH_ORIGIN    0x10000000
-#endif
-
-#ifndef GENESIS_FLASH_SIZE
-#define GENESIS_FLASH_SIZE      2048K
-#endif
-
 #ifndef GENESIS_SRAM_ORIGIN
 #define GENESIS_SRAM_ORIGIN     0x20000000
 #endif

@@ -50,12 +50,12 @@ target_link_libraries(freertos
 )
 
 ## --- Add children cmake -----------------------------------
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bsw_cfg_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_DIR}/mcal_gpt_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/cdd_servo_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/blink_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../sys/Nvm ${CMAKE_CURRENT_BINARY_DIR}/sys_nvm_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../tools/Self_Test ${CMAKE_CURRENT_BINARY_DIR}/self_test_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bin/bsw_cfg_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_DIR}/bin/mcal_gpt_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/bin/cdd_servo_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/bin/blink_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../sys/Nvm ${CMAKE_CURRENT_BINARY_DIR}/bin/sys_nvm_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../tools/Self_Test ${CMAKE_CURRENT_BINARY_DIR}/bin/self_test_build)
 
 ## --- System executable using parent main and linked libraries -----
 add_executable(vip_system

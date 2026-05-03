@@ -22,8 +22,8 @@
 /* None */
 
 /* --- VARIABLES --- */
-static bool state = false;
-GENESIS_NOINIT static uint32_t g_reset_count;
+static bool basw_led_state = false;
+GENESIS_NOINIT uint32_t g_reset_count;
 
 /* --- PRIVATE CODE --- */
 /* None */
@@ -48,8 +48,8 @@ void asw_blink_init(void)
  */
 void asw_blink_mainfunction(void)
 {
-    gpio_put(LED_PIN, state);
-    state = !state;
+    gpio_put(LED_PIN, basw_led_state);
+    basw_led_state = !basw_led_state;
 }
 
 /* --- REVISION HISTORY --- */
