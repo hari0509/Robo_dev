@@ -18,6 +18,7 @@ set(RTOS_CONFIG_PATH ${VIP_DIR}/programs/bsw_cfg/RTOS_config)
 ## --- Import SDK and FreeRTOS helpers -----------------------
 include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 include(${FREERTOS_KERNEL_PATH}/portable/ThirdParty/GCC/RP2040/FreeRTOS_Kernel_import.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/vip_linker_helper.cmake)
 
 project(vip_apps C CXX ASM)
 set(CMAKE_C_STANDARD 11)

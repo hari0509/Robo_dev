@@ -13,6 +13,7 @@
 /* --- INCLUDES --- */
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
+#include "vip_linker_usage_helper.h"
 
 /* --- MACROS --- */
 #define LED_PIN 25
@@ -22,6 +23,7 @@
 
 /* --- VARIABLES --- */
 static bool state = false;
+GENESIS_NOINIT static uint32_t g_reset_count;
 
 /* --- PRIVATE CODE --- */
 /* None */
@@ -36,6 +38,7 @@ void asw_blink_init(void)
 {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
+    g_reset_count += 1u;
 }
 
 /**
