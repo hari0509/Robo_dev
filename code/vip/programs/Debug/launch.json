@@ -1,0 +1,46 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RP2040 Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+
+            "servertype": "openocd",
+
+            // "liveWatch": {
+            //     "enabled": true,
+            //     "samplesPerSecond": 4
+            // },
+
+            "cwd": "C:/Users/jarvis/Documents/Robo/may3/Robo_dev",
+
+            "executable": "C:/Users/jarvis/Documents/Robo/may3/Robo_dev/code/vip/programs/output/build/vip_system.elf",
+
+            "gdbPath": "C:/Debug/OpenOCD-20260302-0.12.0/arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb.exe",
+
+            "serverpath": "C:/Debug/OpenOCD-20260302-0.12.0/bin/openocd.exe",
+
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/rp2040.cfg"
+            ],
+
+            "device": "RP2040",
+
+            "showDevDebugOutput": "raw",
+
+            "runToEntryPoint": "main",
+
+            "preLaunchCommands": [
+                "set substitute-path /home/friday/rtos_pico/may3/Robo_dev C:/Users/jarvis/Documents/Robo/may3/Robo_dev"
+            ],
+
+            "postLaunchCommands": [
+                "monitor reset init",
+                "break main",
+                "continue"
+            ]
+        }
+    ]
+}
