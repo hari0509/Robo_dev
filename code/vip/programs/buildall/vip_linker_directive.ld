@@ -1,21 +1,16 @@
 
-/* Pull in Pico-SDK device definitions (flash/SRAM sizes, etc.) */
+/* 1. Pull SDK linker */
 INCLUDE "pico_flash_region.ld"
 
-/* ---- Memory regions --------------------------------------------------------
- * Sizes reflect a standard Raspberry Pi Pico (2 MB Flash, 264 KB SRAM).
- * Adjust GENESIS_FLASH_SIZE / GENESIS_SRAM_SIZE for your board.
- * -------------------------------------------------------------------------- */
+/* 2. ---- Memory regions -------------------------------------------------------- */
 
 #ifndef GENESIS_SRAM_ORIGIN
 #define GENESIS_SRAM_ORIGIN     0x20000000
 #endif
-
 #ifndef GENESIS_SRAM_SIZE
 #define GENESIS_SRAM_SIZE       256K
 #endif
 
-/* SRAM banks 4 & 5 — single-cycle access, used for time-critical code */
 #define GENESIS_SCRATCH_X_ORIGIN 0x20040000
 #define GENESIS_SCRATCH_X_SIZE   16K
 #define GENESIS_SCRATCH_Y_ORIGIN 0x20044000
@@ -29,10 +24,11 @@ MEMORY
     SCRATCH_Y(rwx): ORIGIN = GENESIS_SCRATCH_Y_ORIGIN, LENGTH = GENESIS_SCRATCH_Y_SIZE
 }
 
-/* ---- Entry point ---------------------------------------------------------- */
+/* 3. ---- Entry point ---------------------------------------------------------- */
+/* Tells the linker that _entry_point is the very first instruction to execute after reset. */
 ENTRY(_entry_point)
 
-/* ---- Output sections ------------------------------------------------------ */
+/* 4. ---- Output sections ------------------------------------------------------ */
 SECTIONS
 {
     /* ------------------------------------------------------------------ */

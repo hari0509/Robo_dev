@@ -1,6 +1,26 @@
 #!/bin/bash
 
 ############################################################
+                # Working #
+# 1. create build directory if it doesn't exist
+# mkdir -p "$OUTPUT_DIR"
+
+# 2. navigate to build directory
+# cd "$OUTPUT_DIR"
+
+# 3. run conan to install dependencies
+# conan install "$SCRIPT_DIR/profiles" --profile:host="$SCRIPT_DIR/profiles/genesis.ini" --profile:build=default --output-folder=. --build=missing
+
+
+# 4. run cmake to configure the build system (code/vip/programs/output/build/CMakeCache.txt will be generated)
+# cmake "$SCRIPT_DIR"
+
+# 5. run make to build (Compilation and linking) the project
+#    4threads were used here, you can adjust this number based on your CPU cores
+# make -j4
+############################################################
+
+############################################################
 # Build script for vip_apps (programs/buildall)
 ############################################################
 
@@ -10,7 +30,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROGRAMS_DIR="$(dirname "$SCRIPT_DIR")"
 OUTPUT_DIR="${PROGRAMS_DIR}/output/build"
 
-echo "=== VIP Apps Build Script ==="
+echo "=== VIP Build Script ==="
 echo "Script dir:   $SCRIPT_DIR"
 echo "Programs dir: $PROGRAMS_DIR"
 echo "Output dir:   $OUTPUT_DIR"
@@ -25,9 +45,16 @@ cd "$OUTPUT_DIR"
 # Clean previous build (optional, uncomment to always clean)
 # rm -rf *
 
-echo "Running CMake configuration from: $(pwd)"
-cmake "$SCRIPT_DIR"
+# install dependencies with conan
+conan install "$SCRIPT_DIR/profiles" --profile:host="$SCRIPT_DIR/profiles/genesis.ini" --profile:build=default --output-folder=$OUTPUT_DIR --build=missing
 
+# Run the CMake configuration step
+# Pico SDK owns the toolchain file, so we don't need to specify it here. CMake will find it via the CMAKE_PREFIX_PATH.
+echo "Running CMake configuration from: $(pwd)"
+cmake "$SCRIPT_DIR" -DPICO_PLATFORM=rp2040 -DCMAKE_PREFIX_PATH="$OUTPUT_DIR/build/Release/generators"
+
+
+# Run the build step with parallel jobs
 echo ""
 echo "Running make with parallel jobs..."
 make -j4
