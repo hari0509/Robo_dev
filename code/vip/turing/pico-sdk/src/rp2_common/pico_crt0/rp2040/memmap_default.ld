@@ -1,3 +1,6 @@
+/* Linker script for Genesis */
+/* TuringMod - Hari */
+
 /* Based on GCC ARM embedded samples.
    Defines the following symbols for use by code:
     __exidx_start
@@ -21,9 +24,19 @@
     __stack (== StackTop)
 */
 
+/*      Flash Address map
+0x10000000 ───────── FLASH (1888 KB)
+0x101D8000 ───────── 32 KB reserved gap
+0x101E0000 ───────── WORK_FLASH (128 KB)
+0x10200000 ───────── end        */
+
+/* Commented due to Flash region split into Code and Work flash */
+/* INCLUDE "pico_flash_region.ld" */
+
 MEMORY
 {
-    INCLUDE "pico_flash_region.ld"
+    FLASH(rx)  : ORIGIN = 0x10000000,  LENGTH = 1888K
+    WORK_FLASH(r)  : ORIGIN = 0x101E0000,    LENGTH = 128K
     RAM(rwx) : ORIGIN =  0x20000000, LENGTH = 256k
     SCRATCH_X(rwx) : ORIGIN = 0x20040000, LENGTH = 4k
     SCRATCH_Y(rwx) : ORIGIN = 0x20041000, LENGTH = 4k
@@ -206,6 +219,19 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = .;
+    } > RAM
+
+    /* ------------------------------------------------------------------ */
+    /*     NOINIT — NOT zero-initialised; survives warm reboot            */
+    /*     Use for: safe-state buffers, diagnostic counters, crash logs    */
+    /*     Mark variables with: __attribute__((section(".noinit")))        */
+    /* ------------------------------------------------------------------ */
+    .noinit (NOLOAD) : {
+        . = ALIGN(4);
+        __noinit_start__ = .;
+        *(.noinit*)
+        . = ALIGN(4);
+        __noinit_end__ = .;
     } > RAM
 
     .heap (NOLOAD):
