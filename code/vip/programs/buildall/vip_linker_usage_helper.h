@@ -54,20 +54,10 @@
 /* SRAM layout pointers — declared by genesis_rp2040.ld */
 extern uint32_t __noinit_start__;
 extern uint32_t __noinit_end__;
-extern uint32_t __heap_start__;
-extern uint32_t __heap_end__;
-extern uint32_t __stack0_top__;
-extern uint32_t __stack1_top__;
 extern uint32_t __scratch_x_start__;
 extern uint32_t __scratch_x_end__;
 extern uint32_t __scratch_y_start__;
 extern uint32_t __scratch_y_end__;
-
-/* Flash layout */
-extern uint32_t __kernel_flash_start__;
-extern uint32_t __kernel_flash_end__;
-extern uint32_t __app_flash_start__;
-extern uint32_t __app_flash_end__;
 
 
 #endif /* GENESIS_LINKER_USAGE_H */
