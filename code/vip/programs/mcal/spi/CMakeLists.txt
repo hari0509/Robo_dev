@@ -12,4 +12,9 @@ target_include_directories(mcal_spi PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 
-target_link_libraries(mcal_spi PUBLIC pico_stdlib)
+target_link_libraries(mcal_spi PUBLIC 
+    pico_stdlib
+    hardware_spi
+    hardware_gpio
+    Platform_Libs
+)
