@@ -2,10 +2,22 @@
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
 
-/* Zero-initialized at load time -> every entry starts MCAL_SPI_UNINIT (0)
- * even before Mcal_Spi_Init() runs. */
-static Mcal_Spi_StatusType Mcal_Spi_State[MCAL_SPI_CH_COUNT];
+/* ---------------------------------- */
+/* Global variables */
+/* SPI Driver State */
+static Mcal_SpiStatusType Mcal_Spi_Status = SPI_UNINIT;
 
+/* SPI Sequence Results */
+static Mcal_SpiSeqResultType Mcal_Spi_SeqResult[MCAL_SPI_SEQ_COUNT];
+
+/* SPI Job Results */
+static Mcal_SpiJobResultType Mcal_Spi_JobResult[MCAL_SPI_JOB_COUNT];
+
+/* EB runtime configuration */
+static Mcal_SpiEbRuntimeType Mcal_Spi_EbRuntime[MCAL_SPI_CH_COUNT];
+
+/* ---------------------------------- */
+/* Private functions */
 static inline spi_inst_t *Mcal_Spi_GetHw(Mcal_SpiHwIdType hw)
 {
     return (hw == MCAL_SPI_HW_SPI1) ? spi1 : spi0;
@@ -21,121 +33,187 @@ static inline spi_cpha_t Mcal_Spi_MapCpha(uint8_t cpha)
     return cpha ? SPI_CPHA_1 : SPI_CPHA_0;
 }
 
+/* ---------------------------------- */
+/* Public functions */
+
 void Mcal_Spi_Init(void)
 {
-    for (uint32_t ch = 0u; ch < MCAL_SPI_CH_COUNT; ch++) {
-        const Mcal_SpiChannelCfgType *cfg = &Mcal_SpiChannelCfg[ch];
-        spi_inst_t *hw = Mcal_Spi_GetHw(cfg->channel_id);
+    if (Mcal_Spi_Status == SPI_UNINIT)
+    {
+        /* Initialize configured SPI channels */
+        for (uint32 channel = 0u; channel < MCAL_SPI_CH_COUNT; channel++)
+        {
+            const Mcal_SpiChannelCfgType *cfg = &Mcal_SpiChannelCfg[channel];
 
-        spi_init(hw, cfg->baud_hz);
-        spi_set_format(hw, cfg->data_bits,
-                        Mcal_Spi_MapCpol(cfg->cpol),
-                        Mcal_Spi_MapCpha(cfg->cpha),
-                        SPI_MSB_FIRST);
+            spi_inst_t *hw = Mcal_Spi_GetHw(cfg->HWchannel_id);
 
-        gpio_set_function(cfg->sck_pin, GPIO_FUNC_SPI);
-        gpio_set_function(cfg->tx_pin, GPIO_FUNC_SPI);
-        gpio_set_function(cfg->rx_pin, GPIO_FUNC_SPI);
+            spi_init(hw, cfg->baud_hz);
 
-        /* CS stays plain GPIO -- MCAL drives it directly, it is never
-         * muxed to GPIO_FUNC_SPI (no hardware SS on this channel). */
-        gpio_init(cfg->cs_pin);
-        gpio_set_dir(cfg->cs_pin, GPIO_OUT);
-        gpio_put(cfg->cs_pin, 1u); /* idle high */
+            spi_set_format(
+                hw,
+                cfg->data_bits,
+                Mcal_Spi_MapCpol(cfg->cpol),
+                Mcal_Spi_MapCpha(cfg->cpha),
+                SPI_MSB_FIRST
+            );
 
-        Mcal_Spi_State[ch] = MCAL_SPI_IDLE;
+            gpio_set_function(cfg->sck_pin, GPIO_FUNC_SPI);
+            gpio_set_function(cfg->tx_pin, GPIO_FUNC_SPI);
+            gpio_set_function(cfg->rx_pin, GPIO_FUNC_SPI);
+
+            /* Software-controlled chip select */
+            gpio_init(cfg->cs_pin);
+            gpio_set_dir(cfg->cs_pin, GPIO_OUT);
+            gpio_put(cfg->cs_pin, 1u);
+
+            /* Initialize EB runtime */
+            Mcal_Spi_EbRuntime[channel].tx_buffer = NULL;
+            Mcal_Spi_EbRuntime[channel].rx_buffer = NULL;
+            Mcal_Spi_EbRuntime[channel].length = 0u;
+            Mcal_Spi_EbRuntime[channel].is_configured = FALSE;
+        }
+
+        /* Initialize sequence results */
+        for (uint32 seq = 0u; seq < MCAL_SPI_SEQ_COUNT; seq++)
+        {
+            Mcal_Spi_SeqResult[seq] = SPI_SEQ_OK;
+        }
+
+        /* initialize job results */
+        for (uint32 job = 0u; job < MCAL_SPI_JOB_COUNT; job++)
+        {
+            Mcal_Spi_JobResult[job] = SPI_JOB_OK;
+        }
+
+        Mcal_Spi_Status = SPI_IDLE;
     }
 }
 
-void Mcal_Spi_DeInit(void)
+Std_ReturnType Mcal_Spi_SetupEB(
+    Mcal_SpiChannelIdType Channel,
+    const Spi_DataBufferType *SrcDataBufferPtr,
+    Spi_DataBufferType *DesDataBufferPtr,
+    Spi_NumberOfDataType Length)
 {
-    for (uint32_t ch = 0u; ch < MCAL_SPI_CH_COUNT; ch++) {
-        const Mcal_SpiChannelCfgType *cfg = &Mcal_SpiChannelCfg[ch];
-        spi_inst_t *hw = Mcal_Spi_GetHw(cfg->channel_id);
+    Std_ReturnType result = E_NOT_OK;
+    Mcal_SpiEbRuntimeType *eb;
 
-        spi_deinit(hw);
-        gpio_set_function(cfg->sck_pin, GPIO_FUNC_SIO);
-        gpio_set_function(cfg->tx_pin, GPIO_FUNC_SIO);
-        gpio_set_function(cfg->rx_pin, GPIO_FUNC_SIO);
+    if ((Mcal_Spi_Status != SPI_UNINIT) &&
+        ((uint32)Channel < MCAL_SPI_CH_COUNT) &&
+        (Length > 0u) &&
+        (Length <= MCAL_SPI_CH_MAX_LENGTH))
+    {
+        eb = &Mcal_Spi_EbRuntime[Channel];
 
-        Mcal_Spi_State[ch] = MCAL_SPI_UNINIT;
+        eb->tx_buffer = SrcDataBufferPtr;
+        eb->rx_buffer = DesDataBufferPtr;
+        eb->length = Length;
+        eb->is_configured = TRUE;
+
+        result = E_OK;
     }
+
+    return result;
 }
 
-Mcal_Spi_StatusType Mcal_Spi_GetStatus(Mcal_SpiChannelIdType channel)
+Std_ReturnType Mcal_Spi_SyncTransmit(Mcal_SpiSeqIdType Sequence)
 {
-    if (channel >= MCAL_SPI_CH_COUNT) {
-        return MCAL_SPI_UNINIT;
+    Std_ReturnType result = E_NOT_OK;
+
+    const Mcal_SpiSeqCfgType *seq_cfg;
+    const Mcal_SpiJobCfgType *job_cfg;
+    const Mcal_SpiChannelCfgType *ch_cfg;
+    const Mcal_SpiEbRuntimeType *eb;
+
+    Mcal_SpiJobIdType job_id;
+    Mcal_SpiChannelIdType channel_id;
+
+    uint32 job_index;
+    uint32 data_index;
+    uint16 tx_frame;
+    uint16 rx_frame;
+
+    /* Validate driver status and sequence ID */
+    if ((Mcal_Spi_Status == SPI_IDLE) &&
+        ((uint32)Sequence < MCAL_SPI_SEQ_COUNT))
+    {
+        seq_cfg = &Mcal_SpiSeqCfg[Sequence];
+
+        if ((seq_cfg->job_list != NULL) &&
+            (seq_cfg->job_count > 0u))
+        {
+            result = E_OK;
+
+            /* Check EB configuration for each job */
+            for (job_index = 0u;
+                 (job_index < seq_cfg->job_count) &&
+                 (result == E_OK);
+                 job_index++)
+            {
+                job_id = seq_cfg->job_list[job_index];
+                job_cfg = &Mcal_SpiJobCfg[job_id];
+                channel_id = Mcal_SpiJobCfg[job_id].channel_id;
+                ch_cfg = &Mcal_SpiChannelCfg[channel_id];
+                eb = &Mcal_Spi_EbRuntime[channel_id];
+                if (eb->is_configured == FALSE)
+                {
+                    result = E_NOT_OK;
+                }
+                else
+                {
+                    Mcal_Spi_Status = SPI_BUSY;
+                    Mcal_Spi_SeqResult[Sequence] = SPI_SEQ_PENDING;
+                    /* Current job starts */
+                    Mcal_Spi_JobResult[job_id] = SPI_JOB_PENDING;
+                    /* Assert chip select */
+                    gpio_put(ch_cfg->cs_pin, 0u);
+                                        /* Transfer EB frames */
+                    for (data_index = 0u;
+                         data_index < eb->length;
+                         data_index++)
+                    {
+                        tx_frame = (eb->tx_buffer != NULL) ? (uint16)eb->tx_buffer[data_index] : (uint16)MCAL_SPI_DEFAULT_TX_DATA;
+                        /* Wait for TX FIFO space */
+                        while (spi_is_writable(Mcal_Spi_GetHw(ch_cfg->HWchannel_id)) == false)
+                        {
+                            /* Poll */
+                        }
+
+                        /* Write TX FIFO */
+                        spi_get_hw(Mcal_Spi_GetHw(ch_cfg->HWchannel_id))->dr = (uint32)tx_frame;
+
+                        /* Wait for RX FIFO data */
+                        while (spi_is_readable(Mcal_Spi_GetHw(ch_cfg->HWchannel_id)) == false)
+                        {
+                            /* Poll */
+                        }
+
+                        /* Read RX FIFO */
+                        rx_frame = (uint16)(spi_get_hw(Mcal_Spi_GetHw(ch_cfg->HWchannel_id))->dr & 0xFFFFu);
+
+                        if (eb->rx_buffer != NULL)
+                        {
+                            eb->rx_buffer[data_index] = (Spi_DataBufferType)rx_frame;
+                        }
+                    }
+
+                    /* Wait for SPI hardware completion */
+                    while (spi_is_busy(Mcal_Spi_GetHw(ch_cfg->HWchannel_id)) == true)
+                    {
+                        /* Poll */
+                    }
+
+                    /* Deassert chip select */
+                    gpio_put(ch_cfg->cs_pin, 1u);
+
+                    /* Job completed */
+                    Mcal_Spi_JobResult[job_id] = SPI_JOB_OK;
+                }
+            }
+            /* Sequence completed */
+            Mcal_Spi_SeqResult[Sequence] = SPI_SEQ_OK;
+            Mcal_Spi_Status = SPI_IDLE;
+        }
     }
-    return Mcal_Spi_State[channel];
-}
-
-Std_ReturnType Mcal_Spi_SetBaudrate(Mcal_SpiChannelIdType channel, uint32_t baud_hz)
-{
-    if ((channel >= MCAL_SPI_CH_COUNT) || (Mcal_Spi_State[channel] == MCAL_SPI_UNINIT)) {
-        return E_NOT_OK;
-    }
-    spi_inst_t *hw = Mcal_Spi_GetHw(Mcal_SpiChannelCfg[channel].channel_id);
-    (void)spi_set_baudrate(hw, baud_hz);
-    return E_OK;
-}
-
-void Mcal_Spi_CsAssert(Mcal_SpiChannelIdType channel)
-{
-    if (channel < MCAL_SPI_CH_COUNT) {
-        gpio_put(Mcal_SpiChannelCfg[channel].cs_pin, 0u);
-    }
-}
-
-void Mcal_Spi_CsDeassert(Mcal_SpiChannelIdType channel)
-{
-    if (channel < MCAL_SPI_CH_COUNT) {
-        gpio_put(Mcal_SpiChannelCfg[channel].cs_pin, 1u);
-    }
-}
-
-Std_ReturnType Mcal_Spi_TransferNoCs(Mcal_SpiChannelIdType channel,
-                                      const uint8_t *tx_buf,
-                                      uint8_t *rx_buf,
-                                      size_t len)
-{
-    if ((channel >= MCAL_SPI_CH_COUNT) || (Mcal_Spi_State[channel] != MCAL_SPI_IDLE)) {
-        return E_NOT_OK;
-    }
-    if (len == 0u) {
-        return E_OK;
-    }
-
-    spi_inst_t *hw = Mcal_Spi_GetHw(Mcal_SpiChannelCfg[channel].channel_id);
-    int result;
-
-    Mcal_Spi_State[channel] = MCAL_SPI_BUSY;
-
-    if ((tx_buf != NULL) && (rx_buf != NULL)) {
-        result = spi_write_read_blocking(hw, tx_buf, rx_buf, len);
-    } else if (tx_buf != NULL) {
-        result = spi_write_blocking(hw, tx_buf, len);
-    } else if (rx_buf != NULL) {
-        result = spi_read_blocking(hw, 0xFFu, rx_buf, len);
-    } else {
-        result = -1;
-    }
-
-    Mcal_Spi_State[channel] = MCAL_SPI_IDLE;
-
-    return (result == (int)len) ? E_OK : E_NOT_OK;
-}
-
-Std_ReturnType Mcal_Spi_Transfer(Mcal_SpiChannelIdType channel,
-                                  const uint8_t *tx_buf,
-                                  uint8_t *rx_buf,
-                                  size_t len)
-{
-    Std_ReturnType ret;
-
-    Mcal_Spi_CsAssert(channel);
-    ret = Mcal_Spi_TransferNoCs(channel, tx_buf, rx_buf, len);
-    Mcal_Spi_CsDeassert(channel);
-
-    return ret;
+    return result;
 }

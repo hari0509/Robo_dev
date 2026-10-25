@@ -19,6 +19,7 @@
 #include "ecum.h"
 #include "os.h"
 #include "rte.h"
+#include "mcal_spi.h"
 
 /* Forward declarations/external symbols from components */
 extern void cdd_servo_init(void);
@@ -54,6 +55,7 @@ void EcuM_Init(void)
 
 void Driver_init0(void)
 {
+    Mcal_Spi_Init();
     OS_Init();
     RTE_Init();
     sys_nvm_init();
