@@ -27,7 +27,7 @@
 /* --- PUBLIC CODE --- */
 void TestScheduler_mainfunction(void)
 {
-
+    TM01_SpiTest();
 }
 
 void asw_checkpointreached()
@@ -44,5 +44,6 @@ void sys_checkpointreached()
 {
     printf("cdd core=%u -- Time=%llu\n", get_core_num(), gpt_get_timervalue(GPT_TIMER_0)/1000);
 }
+
 /* --- REVISION HISTORY --- */
 /* v1.0 - Initial commit - Hari */

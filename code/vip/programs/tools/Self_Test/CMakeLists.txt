@@ -1,6 +1,7 @@
 add_library(Selftest STATIC
     src/TestMain.c
     src/TestScheduler.c
+    src/TestModule01_SpiTest.c
 )
 
 target_include_directories(Selftest PUBLIC
@@ -11,6 +12,8 @@ target_link_libraries(Selftest PUBLIC
     pico_stdlib
     freertos
     mcal_gpt
+    mcal_spi
+    Platform_Libs
 )
 
 set_target_properties(Selftest PROPERTIES LINKER_LANGUAGE C)

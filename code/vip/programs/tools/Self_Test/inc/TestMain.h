@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "mcal_gpt.h"
+#include "Std_Types.h"
 
 void TestMain_init(void);
 void TestMain_mainfunction(void);
