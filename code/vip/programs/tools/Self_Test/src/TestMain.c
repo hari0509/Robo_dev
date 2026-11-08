@@ -11,6 +11,7 @@
 
 /* --- INCLUDES --- */
 #include "TestMain.h"
+#include "mcal_dio.h"
 
 /* --- MACROS --- */
 /* None */
@@ -24,13 +25,11 @@
 /* --- PRIVATE CODE --- */
 /* None */
 /*STUB code*/
-#define TEST_PIN 20
+/* Test pin (GP20) is configured as a DIO output by Port_Init() */
 static bool Teststate = false;
 /* --- PUBLIC CODE --- */
 void TestMain_init(void)
 {
-    gpio_init(TEST_PIN);
-    gpio_set_dir(TEST_PIN, GPIO_OUT);
 }
 
 /*
@@ -38,7 +37,7 @@ void TestMain_init(void)
 void TestMain_mainfunction(void)
 {
     (void) TestScheduler_mainfunction();
-    gpio_put(TEST_PIN, Teststate);
+    Dio_WriteChannel(DioConf_DioChannel_TestPin, Teststate ? (Dio_LevelType)STD_HIGH : (Dio_LevelType)STD_LOW);
     Teststate = !Teststate;
     printf("\ntestpin%d",Teststate);
 }

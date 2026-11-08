@@ -9,6 +9,7 @@
 void TestMain_init(void);
 void TestMain_mainfunction(void);
 void TestScheduler_mainfunction(void);
+void TM01_SpiTest(void);
 void sys_checkpointreached(void);
 void asw_checkpointreached(void);
 void cdd_checkpointreached(void);

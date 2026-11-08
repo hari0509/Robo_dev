@@ -12,11 +12,12 @@
 
 /* --- INCLUDES --- */
 #include "pico/stdlib.h"
-#include "hardware/gpio.h"
+#include "mcal_dio.h"
 #include "vip_linker_usage_helper.h"
 
 /* --- MACROS --- */
-#define LED_PIN 25
+/* On-board LED (GP25), set up as a DIO output by Port_Init() */
+#define LED_CHANNEL DioConf_DioChannel_LED_Onboard
 
 /* --- CONSTANTS --- */
 /* None */
@@ -31,13 +32,11 @@ GENESIS_NOINIT uint32_t g_reset_count;
 /* --- PUBLIC CODE --- */
 /**
  * asw_blink_init()
- * Initialize GPIO pin for LED control (on-board LED, GPIO 25).
+ * The LED pin (on-board LED, GPIO 25) is configured by Port_Init().
  * Called once during ECU initialization.
  */
 void asw_blink_init(void)
 {
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
     g_reset_count += 1u;
 }
 
@@ -48,7 +47,7 @@ void asw_blink_init(void)
  */
 void asw_blink_mainfunction(void)
 {
-    gpio_put(LED_PIN, basw_led_state);
+    Dio_WriteChannel(LED_CHANNEL, basw_led_state ? (Dio_LevelType)STD_HIGH : (Dio_LevelType)STD_LOW);
     basw_led_state = !basw_led_state;
 }
 

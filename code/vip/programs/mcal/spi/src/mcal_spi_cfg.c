@@ -1,65 +1,99 @@
 #include "mcal_spi_cfg.h"
+#include "mcal_dio_cfg.h"
 
-/* GPIO Configuration */
-#define MCAL_SPI_CH0_SCK_PIN      (2u)
-#define MCAL_SPI_CH0_TX_PIN       (3u)
-#define MCAL_SPI_CH0_RX_PIN       (4u)
-#define MCAL_SPI_CH0_CS_PIN       (5u)
+/* ---------------------------------- */
+/* HW unit 0: SPI0 on GP2 (SCK), GP3 (MOSI), GP4 (MISO) */
+#define MCAL_SPI_HW0_SCK_PIN      (2u)
+#define MCAL_SPI_HW0_TX_PIN       (3u)
+#define MCAL_SPI_HW0_RX_PIN       (4u)
 
-/* Communication Configuration 
- * Motorola SPI Modes:
- * +------+-------+-------+-------------+-------------+-------------+
- * | Mode | CPOL  | CPHA  | Clock Idle  | Sample Edge | Shift Edge  |
- * +------+-------+-------+-------------+-------------+-------------+
- * |  0   |   0   |   0   | LOW         | Rising      | Falling     |
- * |  1   |   0   |   1   | LOW         | Falling     | Rising      |
- * |  2   |   1   |   0   | HIGH        | Falling     | Rising      |
- * |  3   |   1   |   1   | HIGH        | Rising      | Falling     |
- * +------+-------+-------+-------------+-------------+-------------+
-*/
+
 #define MCAL_SPI_1MHZ             (1000000u)
-#define MCAL_SPI_CH0_CPOL         (0u)
-#define MCAL_SPI_CH0_CPHA         (0u)
-#define MCAL_SPI_CH0_DATA_BITS    (8u)
 
-const Mcal_SpiChannelCfgType Mcal_SpiChannelCfg[MCAL_SPI_HW_COUNT] = {
-    /* Logical channel 0 */
-    {
-        .HWchannel_id = MCAL_SPI_HW_SPI0,
-        .sck_pin    = MCAL_SPI_CH0_SCK_PIN,
-        .tx_pin     = MCAL_SPI_CH0_TX_PIN,
-        .rx_pin     = MCAL_SPI_CH0_RX_PIN,
-        .cs_pin     = MCAL_SPI_CH0_CS_PIN,
-        .baud_hz    = MCAL_SPI_1MHZ,
-        .cpol       = MCAL_SPI_CH0_CPOL,
-        .cpha       = MCAL_SPI_CH0_CPHA,
-        .data_bits  = MCAL_SPI_CH0_DATA_BITS,
-    },
-};
+/* Channel 0 */
+#define MCAL_SPI_CH0_DATA_WIDTH   (8u)
+#define MCAL_SPI_CH0_MAX_LENGTH   (256u)
+#define MCAL_SPI_CH0_DEFAULT_DATA (0xFFu)
 
-const Mcal_SpiJobCfgType Mcal_SpiJobCfg[MCAL_SPI_JOB_COUNT] =
+static const Spi_HwUnitConfigType Spi_HwUnitCfg[SPI_MAX_HWUNIT] =
 {
     {
-        .channel_id = MCAL_SPI_CH_Test,
-        .priority   = 1u
-    },
-    {
-        .channel_id = MCAL_SPI_CH_Test,
-        .priority   = 1u
+        .hw_instance = 0u,
+        .sck_pin     = MCAL_SPI_HW0_SCK_PIN,
+        .tx_pin      = MCAL_SPI_HW0_TX_PIN,
+        .rx_pin      = MCAL_SPI_HW0_RX_PIN
     }
 };
 
-static const Mcal_SpiJobIdType Mcal_SpiSeq0JobList[] =
+/* Mode 0 = idle low, data shifted on the trailing edge (see mcal_spi_cfg.h) */
+static const Spi_ExternalDeviceConfigType Spi_ExtDev0 =
 {
-    MCAL_SPI_JOB_0,
-    MCAL_SPI_JOB_1
+    .hw_unit        = SpiConf_SpiHwUnit_SPI0,
+    .baudrate_hz    = MCAL_SPI_1MHZ,
+    .clk_idle       = SPI_CLK_IDLE_LOW,
+    .shift_edge     = SPI_EDGE_TRAILING,
+    .cs_channel     = DioConf_DioChannel_SPI_CS,
+    .cs_polarity    = SPI_CS_POLARITY_LOW,
+    .time_cs2clk_us = 0u,
+    .time_clk2cs_us = 0u
 };
 
-const Mcal_SpiSeqCfgType Mcal_SpiSeqCfg[MCAL_SPI_SEQ_COUNT] =
+/* Channel 0 is an external-buffer channel, so it needs no IB memory */
+static const Spi_ChannelConfigType Spi_ChannelCfg[SPI_MAX_CHANNEL] =
 {
     {
-        .job_list  = Mcal_SpiSeq0JobList,
-        .job_count = 2u
+        .channel_type = SPI_CHANNEL_EB,
+        .data_width   = MCAL_SPI_CH0_DATA_WIDTH,
+        .default_data = MCAL_SPI_CH0_DEFAULT_DATA,
+        .max_length   = MCAL_SPI_CH0_MAX_LENGTH,
+        .ib_tx_buffer = NULL,
+        .ib_rx_buffer = NULL
     }
 };
 
+/* Both jobs run the test channel on the same device (write then read) */
+static const Spi_ChannelType Spi_JobChannels[] =
+{
+    SpiConf_SpiChannel_Test
+};
+
+static const Spi_JobConfigType Spi_JobCfg[SPI_MAX_JOB] =
+{
+    {
+        .priority         = 1u,
+        .channel_list     = Spi_JobChannels,
+        .channel_count    = 1u,
+        .device           = &Spi_ExtDev0,
+        .end_notification = NULL
+    },
+    {
+        .priority         = 1u,
+        .channel_list     = Spi_JobChannels,
+        .channel_count    = 1u,
+        .device           = &Spi_ExtDev0,
+        .end_notification = NULL
+    }
+};
+
+static const Spi_JobType Spi_SeqTestJobs[] =
+{
+    SpiConf_SpiJob_Write,
+    SpiConf_SpiJob_Read
+};
+
+static const Spi_SequenceConfigType Spi_SequenceCfg[SPI_MAX_SEQUENCE] =
+{
+    {
+        .job_list         = Spi_SeqTestJobs,
+        .job_count        = 2u,
+        .end_notification = NULL
+    }
+};
+
+const Spi_ConfigType Spi_Config =
+{
+    .hw_units  = Spi_HwUnitCfg,
+    .channels  = Spi_ChannelCfg,
+    .jobs      = Spi_JobCfg,
+    .sequences = Spi_SequenceCfg
+};

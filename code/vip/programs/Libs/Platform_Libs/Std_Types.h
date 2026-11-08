@@ -13,9 +13,24 @@ typedef uint8_t boolean;
 #define TRUE 1u
 #define FALSE 0u
 
+/* AUTOSAR standard on/off and logic level symbols */
+#define STD_ON   1u
+#define STD_OFF  0u
+#define STD_HIGH 1u
+#define STD_LOW  0u
+
 typedef enum {
     E_OK = 0,
     E_NOT_OK
 } Std_ReturnType;
+
+/* AUTOSAR module version information (Std_VersionInfoType) */
+typedef struct {
+    uint16 vendorID;
+    uint16 moduleID;
+    uint8  sw_major_version;
+    uint8  sw_minor_version;
+    uint8  sw_patch_version;
+} Std_VersionInfoType;
 
 #endif /* STD_TYPES_H */

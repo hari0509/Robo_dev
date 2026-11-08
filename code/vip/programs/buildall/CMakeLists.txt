@@ -51,6 +51,8 @@ target_link_libraries(freertos
 ## --- Add children cmake -----------------------------------
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../bsw_cfg ${CMAKE_CURRENT_BINARY_DIR}/bin/bsw_cfg_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/gpt ${CMAKE_CURRENT_BINARY_DIR}/bin/mcal_gpt_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/port ${CMAKE_CURRENT_BINARY_DIR}/bin/mcal_port_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/dio ${CMAKE_CURRENT_BINARY_DIR}/bin/mcal_dio_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../mcal/spi ${CMAKE_CURRENT_BINARY_DIR}/bin/mcal_spi_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cdd/servo ${CMAKE_CURRENT_BINARY_DIR}/bin/cdd_servo_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../apps/blink ${CMAKE_CURRENT_BINARY_DIR}/bin/blink_build)
@@ -76,6 +78,8 @@ target_link_libraries(vip_system PRIVATE
 	Platform_Libs
 	#mcal libs
 	mcal_gpt
+	mcal_port
+	mcal_dio
 	mcal_spi
 	#system lib
 	bsw_cfg

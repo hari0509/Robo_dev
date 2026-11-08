@@ -12,6 +12,7 @@ target_link_libraries(Selftest PUBLIC
     pico_stdlib
     freertos
     mcal_gpt
+    mcal_dio
     mcal_spi
     Platform_Libs
 )
