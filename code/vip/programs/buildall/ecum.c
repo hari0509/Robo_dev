@@ -19,6 +19,7 @@
 #include "ecum.h"
 #include "os.h"
 #include "rte.h"
+#include "mcal_port.h"
 #include "mcal_spi.h"
 
 /* Forward declarations/external symbols from components */
@@ -55,7 +56,10 @@ void EcuM_Init(void)
 
 void Driver_init0(void)
 {
-    Mcal_Spi_Init();
+    /* Port first: it owns pin muxing and the initial pin levels that Dio,
+     * Spi and the applications rely on */
+    Port_Init(&Port_Config);
+    Spi_Init(&Spi_Config);
     OS_Init();
     RTE_Init();
     sys_nvm_init();
