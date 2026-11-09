@@ -49,7 +49,7 @@
 /* ================================================================ */
 
 #define SPI_MAX_HWUNIT            (1u) //currently SPI0 is used; SPI1 is not configured
-#define SPI_MAX_CHANNEL           (1u)
+#define SPI_MAX_CHANNEL           (2u)
 #define SPI_MAX_JOB               (2u)
 #define SPI_MAX_SEQUENCE          (1u)
 
@@ -58,7 +58,8 @@
 #define SpiConf_SpiHwUnit_SPI1    ((Spi_HWUnitType)1u)
 
 /* Channels */
-#define SpiConf_SpiChannel_Test   ((Spi_ChannelType)0u)
+#define SpiConf_SpiChannel_RDTest   ((Spi_ChannelType)0u)
+#define SpiConf_SpiChannel_WRTest   ((Spi_ChannelType)1u)
 
 /* Jobs */
 #define SpiConf_SpiJob_Write      ((Spi_JobType)0u)   /* Write command */
