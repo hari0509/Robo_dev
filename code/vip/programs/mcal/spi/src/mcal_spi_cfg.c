@@ -48,27 +48,41 @@ static const Spi_ChannelConfigType Spi_ChannelCfg[SPI_MAX_CHANNEL] =
         .max_length   = MCAL_SPI_CH0_MAX_LENGTH,
         .ib_tx_buffer = NULL,
         .ib_rx_buffer = NULL
+    },
+    {
+        .channel_type = SPI_CHANNEL_EB,
+        .data_width   = MCAL_SPI_CH0_DATA_WIDTH,
+        .default_data = MCAL_SPI_CH0_DEFAULT_DATA,
+        .max_length   = MCAL_SPI_CH0_MAX_LENGTH,
+        .ib_tx_buffer = NULL,
+        .ib_rx_buffer = NULL
     }
 };
 
 /* Both jobs run the test channel on the same device (write then read) */
-static const Spi_ChannelType Spi_JobChannels[] =
+static const Spi_ChannelType Spi_Job1Channels[] =
 {
-    SpiConf_SpiChannel_Test
+    SpiConf_SpiChannel_WRTest
 };
+
+static const Spi_ChannelType Spi_Job2Channels[] =
+{
+    SpiConf_SpiChannel_RDTest
+};
+
 
 static const Spi_JobConfigType Spi_JobCfg[SPI_MAX_JOB] =
 {
     {
         .priority         = 1u,
-        .channel_list     = Spi_JobChannels,
+        .channel_list     = Spi_Job1Channels,
         .channel_count    = 1u,
         .device           = &Spi_ExtDev0,
         .end_notification = NULL
     },
     {
         .priority         = 1u,
-        .channel_list     = Spi_JobChannels,
+        .channel_list     = Spi_Job2Channels,
         .channel_count    = 1u,
         .device           = &Spi_ExtDev0,
         .end_notification = NULL

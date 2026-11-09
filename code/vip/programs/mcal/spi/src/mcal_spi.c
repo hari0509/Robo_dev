@@ -188,17 +188,6 @@ static uint8 Spi_ValidateConfig(const Spi_ConfigType *cfg)
         }
     }
 
-    for (i = 0u; (err == SPI_E_NO_ERROR) && (i < SPI_MAX_CHANNEL); i++)
-    {
-        const Spi_ChannelConfigType *ch = &cfg->channels[i];
-
-        if ((ch->ib_tx_buffer == NULL) || (ch->ib_rx_buffer == NULL))
-        {
-            err = SPI_E_PARAM_CHANNEL;
-            break;
-        }
-    }
-
     return err;
 }
 #endif /* SPI_DEV_ERROR_DETECT */
